@@ -14,12 +14,18 @@ export default defineConfig({
       output: {
         // Ensure proper initialization order
         format: 'es',
+        // Chunk yükleme sırasını garanti altına al
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: (id) => {
           // Ensure supabaseClient stays in main bundle to avoid initialization issues
           if (id.includes("lib/supabaseClient")) {
             return undefined; // Keep in main bundle
           }
-          // React ve React-DOM'u ayrı chunk'a ayır
+          
+          // React ve React-DOM'u ayrı chunk'a ayır (EN ÖNCE - initialization order için kritik)
+          // Bu chunk her zaman önce yüklenecek
           if (
             id.includes("node_modules/react/") ||
             id.includes("node_modules/react-dom/")
@@ -27,6 +33,7 @@ export default defineConfig({
             return "react-vendor";
           }
 
+          // React bağımlılıklarını ayrı chunk'lara ayır (React'ten sonra yüklenecek)
           // React Router'ı ayrı chunk'a ayır
           if (id.includes("node_modules/react-router")) {
             return "router-vendor";
@@ -37,12 +44,7 @@ export default defineConfig({
             return "query-vendor";
           }
 
-          // Swiper'ı ayrı chunk'a ayır (büyük bir kütüphane)
-          if (id.includes("node_modules/swiper")) {
-            return "swiper-vendor";
-          }
-
-          // UI kütüphanelerini birleştir
+          // UI kütüphanelerini birleştir (React bağımlı)
           if (
             id.includes("node_modules/@headlessui") ||
             id.includes("node_modules/@heroicons")
@@ -50,32 +52,46 @@ export default defineConfig({
             return "ui-vendor";
           }
 
-          // Form kütüphanelerini birleştir
+          // Form kütüphanelerini birleştir (React bağımlı)
           if (
             id.includes("node_modules/react-hook-form") ||
-            id.includes("node_modules/zod") ||
-            id.includes("node_modules/@hookform/resolvers")
+            id.includes("node_modules/@hookform/resolvers") ||
+            id.includes("node_modules/zod")
           ) {
             return "form-vendor";
           }
 
-          // Supabase'i ayrı chunk'a ayır
-          if (id.includes("node_modules/@supabase")) {
-            return "supabase-vendor";
-          }
-
-          // Date utilities
-          if (id.includes("node_modules/date-fns")) {
-            return "date-vendor";
-          }
-
-          // React Day Picker
+          // React Day Picker (React bağımlı)
           if (id.includes("node_modules/react-day-picker")) {
             return "date-picker-vendor";
           }
 
+          // Swiper'ı ayrı chunk'a ayır (büyük bir kütüphane, React bağımlı değil)
+          if (id.includes("node_modules/swiper")) {
+            return "swiper-vendor";
+          }
+
+          // Supabase'i ayrı chunk'a ayır (React bağımlı değil)
+          if (id.includes("node_modules/@supabase")) {
+            return "supabase-vendor";
+          }
+
+          // Date utilities (React bağımlı değil)
+          if (id.includes("node_modules/date-fns")) {
+            return "date-vendor";
+          }
+
+          // Browser-image-compression gibi React bağımlı olmayan kütüphaneler
+          if (id.includes("node_modules/browser-image-compression")) {
+            return "utils-vendor";
+          }
+
           // Diğer node_modules'leri vendor chunk'ına koy
+          // ÖNEMLİ: React bağımlılıklarını vendor chunk'ından çıkar
+          // Çünkü React henüz yüklenmeden erişmeye çalışabilirler
           if (id.includes("node_modules")) {
+            // React'e bağımlı olabilecek kütüphaneleri vendor chunk'ından çıkar
+            // Bu kütüphaneler zaten yukarıda ayrı chunk'lara ayrıldı
             return "vendor";
           }
         },
