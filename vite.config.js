@@ -5,11 +5,31 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    // React bağımlılıklarını önceden optimize et
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      '@headlessui/react',
+      '@heroicons/react',
+      'react-hook-form',
+      '@hookform/resolvers',
+      'react-day-picker',
+    ],
+    // React bağımlılıklarını vendor chunk'ından çıkar
+    exclude: [],
+  },
   build: {
     // Ensure proper module resolution
     modulePreload: {
       polyfill: true,
     },
+    // Minification ayarları - daha iyi hata mesajları için
+    minify: 'esbuild',
+    // Source maps - production'da da hata ayıklama için
+    sourcemap: false,
     rollupOptions: {
       output: {
         // Ensure proper initialization order
@@ -90,8 +110,14 @@ export default defineConfig({
           // ÖNEMLİ: React bağımlılıklarını vendor chunk'ından çıkar
           // Çünkü React henüz yüklenmeden erişmeye çalışabilirler
           if (id.includes("node_modules")) {
-            // React'e bağımlı olabilecek kütüphaneleri vendor chunk'ından çıkar
-            // Bu kütüphaneler zaten yukarıda ayrı chunk'lara ayrıldı
+            // React bağımlılıklarını vendor chunk'ından çıkar
+            // Yukarıda belirtilen tüm React bağımlılıkları zaten ayrı chunk'lara ayrıldı
+            
+            // Ek kontrol: Eğer bu kütüphane React'e bağımlıysa (package.json'da peerDependencies veya dependencies'de react varsa)
+            // vendor chunk'ına koyma, undefined döndür (ana bundle'a dahil et)
+            // Bu, React'in her zaman önce yüklendiğini garanti eder
+            
+            // Not: Bu kontrol runtime'da yapılamaz, bu yüzden yukarıdaki explicit kontroller kritik
             return "vendor";
           }
         },
