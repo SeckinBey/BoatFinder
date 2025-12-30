@@ -17,9 +17,10 @@ vi.mock("@headlessui/react", () => {
     </div>
   );
 
-  Dialog.Title = ({ children, as: As = "h3", className }) => (
-    <As className={className}>{children}</As>
-  );
+  Dialog.Title = ({ children, as: As = "h3", className }) => {
+    const TitleComponent = As;
+    return <TitleComponent className={className}>{children}</TitleComponent>;
+  };
 
   const Transition = ({ show, children }) => (show ? <>{children}</> : null);
   Transition.Child = ({ children }) => <>{children}</>;
@@ -111,7 +112,7 @@ describe("ConfirmDialog", () => {
 
   it("should call onClose when cancel button is clicked even if onCancel is not provided", async () => {
     const user = userEvent.setup();
-    const { onCancel, ...propsWithoutCancel } = defaultProps;
+    const { onCancel: _onCancel, ...propsWithoutCancel } = defaultProps;
     render(<ConfirmDialog {...propsWithoutCancel} />);
 
     const cancelButton = screen.getByText("İptal");

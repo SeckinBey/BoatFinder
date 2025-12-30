@@ -20,7 +20,6 @@ import OptimizedImage from "../components/OptimizedImage.jsx";
 // Booking service ve form validation eklenecek
 
 export default function ProductDetail() {
-  const { id } = useParams();
   const { product, isLoading, error } = useProduct();
   const {
     amenities: amenitiesList,
@@ -111,7 +110,6 @@ export default function ProductDetail() {
         descriptionExpanded={descriptionExpanded}
         setDescriptionExpanded={setDescriptionExpanded}
         showAllSpecs={showAllSpecs}
-        setShowAllSpecs={setShowAllSpecs}
         showAllAmenities={showAllAmenities}
         setShowAllAmenities={setShowAllAmenities}
         faqOpen={faqOpen}
@@ -133,8 +131,6 @@ function ProductDetailContent({
   setThumbsSwiper,
   descriptionExpanded,
   setDescriptionExpanded,
-  showAllSpecs,
-  setShowAllSpecs,
   showAllAmenities,
   setShowAllAmenities,
   faqOpen,
@@ -179,9 +175,6 @@ function ProductDetailContent({
       ? descriptionText
       : `${descriptionText.slice(0, 320)}...`;
 
-  const displayedSpecs = showAllSpecs
-    ? technicalSpecs
-    : technicalSpecs.slice(0, 4);
   const displayedAmenities = showAllAmenities
     ? mappedAmenities
     : mappedAmenities.slice(0, 8);

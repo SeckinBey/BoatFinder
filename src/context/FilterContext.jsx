@@ -49,6 +49,7 @@ export function FilterProvider({ children }) {
       const locationIdNum = safeParseInt(locationId);
       const location = getLocationById(locationIdNum, locations);
       if (location) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedLocationState((prev) => {
           if (prev?.id !== location.id) {
             return location;
@@ -60,6 +61,7 @@ export function FilterProvider({ children }) {
       // Path parametresinden location set et (CardSlider'dan)
       const location = getLocationByName(locationName, locations);
       if (location) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedLocationState((prev) => {
           if (prev?.id !== location.id) {
             return location;
@@ -73,6 +75,7 @@ export function FilterProvider({ children }) {
     if (date) {
       const parsedDate = parseDate(date, DATE_FORMATS.DISPLAY);
       if (parsedDate) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDepartureDateState((prev) => {
           if (!prev || prev.getTime() !== parsedDate.getTime()) {
             return parsedDate;
@@ -85,6 +88,7 @@ export function FilterProvider({ children }) {
     // People sync
     if (people !== null && people !== undefined) {
       const peopleNum = safeParseInt(people, DEFAULTS.NUMBER_OF_PEOPLE);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNumberOfPeopleState((prev) => {
         if (prev !== peopleNum) {
           return peopleNum;
@@ -255,6 +259,7 @@ export function FilterProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useFilters() {
   const context = useContext(FilterContext);
   if (!context) {

@@ -25,8 +25,6 @@ export default function AdminProductsNew() {
   const [locations, setLocations] = useState([]);
   const [boatTypes, setBoatTypes] = useState([]);
   const [amenities, setAmenities] = useState([]);
-  const [captains, setCaptains] = useState([]);
-  const [owners, setOwners] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFiles, setImageFiles] = useState([null]); // File objeleri için
@@ -70,21 +68,15 @@ export default function AdminProductsNew() {
           locationsData,
           boatTypesData,
           amenitiesData,
-          captainsData,
-          ownersData,
         ] = await Promise.all([
           getLocations(),
           getBoatTypes(),
           getAmenities(),
-          getCaptains(),
-          getBoatOwners(),
         ]);
 
         setLocations(locationsData);
         setBoatTypes(boatTypesData);
         setAmenities(amenitiesData);
-        setCaptains(captainsData);
-        setOwners(ownersData);
       } catch (err) {
         console.error("Error loading data:", err);
         showError("Veriler yüklenirken bir hata oluştu");
@@ -104,7 +96,7 @@ export default function AdminProductsNew() {
         }
       });
     };
-  }, []);
+  }, [imagePreviews]);
 
   // Image file değişikliği
   const handleImageChange = (index, file) => {

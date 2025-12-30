@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useConfirm } from "./useConfirm.js";
 
 describe("useConfirm", () => {
@@ -12,9 +12,8 @@ describe("useConfirm", () => {
   it("should open confirm dialog when confirm is called", async () => {
     const { result } = renderHook(() => useConfirm());
 
-    let confirmPromise;
     act(() => {
-      confirmPromise = result.current.confirm({
+      result.current.confirm({
         title: "Test Title",
         message: "Test message",
       });

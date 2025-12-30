@@ -61,7 +61,7 @@ describe("EmptyState", () => {
   });
 
   it("should not render message when message prop is not provided", () => {
-    const { container } = renderWithRouter(<EmptyState />);
+    renderWithRouter(<EmptyState />);
     // Message olmadığında sadece title ve action gösterilir
     expect(screen.getByText("İçerik bulunamadı")).toBeInTheDocument();
     expect(screen.getByText("Ana Sayfaya Dön")).toBeInTheDocument();

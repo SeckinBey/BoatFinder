@@ -1,5 +1,4 @@
 import { supabase } from "../lib/supabaseClient.js";
-import { handleError, getUserFriendlyErrorMessage } from '../utils/errorHandler.js';
 
 /**
  * Tüm tekneleri getirir (ilişkisel verilerle birlikte)

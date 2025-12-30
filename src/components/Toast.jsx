@@ -13,7 +13,7 @@ export default function Toast({
   onClose,
   message,
   type = "info",
-  duration = 5000,
+  duration: _duration = 5000, // Duration is passed but not used in this component (used in ToastContainer)
 }) {
   const icons = {
     success: CheckCircleIcon,

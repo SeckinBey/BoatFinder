@@ -46,7 +46,6 @@ export default function AdminData() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
-  const [isSaving, setIsSaving] = useState(false);
 
   const { success, error: errorToast } = useToastContext();
   const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm();
@@ -253,7 +252,6 @@ export default function AdminData() {
   const handleSave = useCallback(
     async (e) => {
       e.preventDefault();
-      setIsSaving(true);
 
       try {
         if (editingItem) {
@@ -272,10 +270,8 @@ export default function AdminData() {
         setIsModalOpen(false);
         setFormData({});
         setEditingItem(null);
-      } catch (err) {
+      } catch {
         // Error handling mutation'ların onError'unda yapılıyor
-      } finally {
-        setIsSaving(false);
       }
     },
     [activeTab, editingItem, formData, createMutation, updateMutation]

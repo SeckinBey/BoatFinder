@@ -127,7 +127,7 @@ export default function AdminProductsEdit() {
         }
       });
     };
-  }, []);
+  }, [imagePreviews]);
 
   // Görsel değişikliği (URL veya dosya)
   const handleImageChange = (index, fileOrUrl, type) => {

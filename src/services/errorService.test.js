@@ -142,9 +142,7 @@ describe("errorService", () => {
 
       // Force the fallback branch in errorService
       // (jsdom normally provides these globals)
-      // eslint-disable-next-line no-global-assign
       globalThis.navigator = undefined;
-      // eslint-disable-next-line no-global-assign
       globalThis.window = undefined;
 
       errorService.logError(new Error("UA/URL test"));
@@ -153,9 +151,7 @@ describe("errorService", () => {
       expect(logs[0].url).toBeNull();
 
       // Restore globals
-      // eslint-disable-next-line no-global-assign
       globalThis.navigator = originalNavigator;
-      // eslint-disable-next-line no-global-assign
       globalThis.window = originalWindow;
     });
 
