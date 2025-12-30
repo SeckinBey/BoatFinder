@@ -86,6 +86,11 @@ export default defineConfig({
             return "date-picker-vendor";
           }
 
+          // Tailwind CSS Vite plugin (React bağımlı olabilir)
+          if (id.includes("node_modules/@tailwindcss")) {
+            return "tailwind-vendor";
+          }
+
           // Swiper'ı ayrı chunk'a ayır (büyük bir kütüphane, React bağımlı değil)
           if (id.includes("node_modules/swiper")) {
             return "swiper-vendor";
@@ -106,19 +111,34 @@ export default defineConfig({
             return "utils-vendor";
           }
 
-          // Diğer node_modules'leri vendor chunk'ına koy
-          // ÖNEMLİ: React bağımlılıklarını vendor chunk'ından çıkar
-          // Çünkü React henüz yüklenmeden erişmeye çalışabilirler
+          // Diğer node_modules'leri kontrol et
+          // ÖNEMLİ: React bağımlılıklarını vendor chunk'ından TAMAMEN çıkar
+          // Bilinen React bağımlılıkları için ek kontroller
+          // Bu kütüphaneler vendor chunk'ına girmemeli - ana bundle'a dahil et
+          const reactDependentPatterns = [
+            'react',
+            'react-dom',
+            'react-router',
+            '@tanstack/react-query',
+            '@headlessui',
+            '@heroicons',
+            'react-hook-form',
+            '@hookform',
+            'react-day-picker',
+            '@tailwindcss',
+          ];
+          
           if (id.includes("node_modules")) {
-            // React bağımlılıklarını vendor chunk'ından çıkar
-            // Yukarıda belirtilen tüm React bağımlılıkları zaten ayrı chunk'lara ayrıldı
+            // Eğer bu kütüphane React bağımlılığı içeriyorsa, vendor'a koyma
+            // Ana bundle'a dahil et - React'in önce yüklendiğini garanti eder
+            if (reactDependentPatterns.some(pattern => id.includes(pattern))) {
+              return undefined;
+            }
             
-            // Ek kontrol: Eğer bu kütüphane React'e bağımlıysa (package.json'da peerDependencies veya dependencies'de react varsa)
-            // vendor chunk'ına koyma, undefined döndür (ana bundle'a dahil et)
+            // Diğer kütüphaneler için de ana bundle'a dahil et
             // Bu, React'in her zaman önce yüklendiğini garanti eder
-            
-            // Not: Bu kontrol runtime'da yapılamaz, bu yüzden yukarıdaki explicit kontroller kritik
-            return "vendor";
+            // Vendor chunk'ı kaldırıldı çünkü React bağımlılıkları vendor'a giriyordu
+            return undefined;
           }
         },
       },
