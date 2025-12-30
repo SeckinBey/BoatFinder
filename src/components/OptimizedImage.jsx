@@ -1,5 +1,5 @@
 // src/components/OptimizedImage.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import placeholderImage from "../assets/images/placeholder.svg";
 
 /**
@@ -50,7 +50,9 @@ export default function OptimizedImage({
   const finalPlaceholder = placeholder || placeholderImage;
 
   // src prop'u değiştiğinde resetle
-  useEffect(() => {
+  // useLayoutEffect kullanıyoruz çünkü prop değişikliğini senkron olarak state'e yansıtmamız gerekiyor
+  // Bu, React'in yeni kurallarına göre effect içinde setState kullanımı için uygun bir durum
+  useLayoutEffect(() => {
     if (src !== originalSrcRef.current) {
       originalSrcRef.current = src;
       setImageSrc(src);
