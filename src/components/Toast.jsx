@@ -13,8 +13,10 @@ export default function Toast({
   onClose,
   message,
   type = "info",
-  duration: _duration = 5000, // Duration is passed but not used in this component (used in ToastContainer)
+  duration: _duration = 5000, // Duration is passed but not used in this component (used in ToastContainer for auto-removal)
 }) {
+  // Suppress unused variable warning - duration is used by ToastContainer
+  void _duration;
   const icons = {
     success: CheckCircleIcon,
     error: XCircleIcon,

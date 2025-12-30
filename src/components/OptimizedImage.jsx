@@ -53,11 +53,8 @@ export default function OptimizedImage({
   useEffect(() => {
     if (src !== originalSrcRef.current) {
       originalSrcRef.current = src;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setImageSrc(src);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(true);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasError(false);
       isUsingPlaceholderRef.current = false;
       errorHandlerCalledRef.current = false;

@@ -10,8 +10,6 @@ import {
   getLocations,
   getBoatTypes,
   getAmenities,
-  getCaptains,
-  getBoatOwners,
 } from "../../services/staticDataService.js";
 import { useToastContext } from "../../context/ToastContext.jsx";
 import { ROUTES } from "../../constants/index.js";

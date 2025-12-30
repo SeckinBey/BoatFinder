@@ -13,7 +13,6 @@ import { ERROR_MESSAGES, SEO_CONFIG } from "../constants/index.js";
 import { useProduct } from "../hooks/useProduct.js";
 import DataWrapper from "../components/DataWrapper.jsx";
 import { useSEO } from "../hooks/useSEO.js";
-import { useParams } from "react-router-dom";
 import OptimizedImage from "../components/OptimizedImage.jsx";
 
 // TODO: Rezervasyon sistemi gelecekte implement edilecek
@@ -76,7 +75,6 @@ export default function ProductDetail() {
 
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
-  const [showAllSpecs, setShowAllSpecs] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [faqOpen, setFaqOpen] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -109,7 +107,6 @@ export default function ProductDetail() {
         setThumbsSwiper={setThumbsSwiper}
         descriptionExpanded={descriptionExpanded}
         setDescriptionExpanded={setDescriptionExpanded}
-        showAllSpecs={showAllSpecs}
         showAllAmenities={showAllAmenities}
         setShowAllAmenities={setShowAllAmenities}
         faqOpen={faqOpen}
@@ -151,19 +148,6 @@ function ProductDetailContent({
       value: product.personCapacity || product.travelCapacity,
       icon: "👥",
     },
-  ];
-
-  const technicalSpecs = [
-    { label: "Model Yılı", value: "2024" },
-    {
-      label: "Seyir Kapasitesi",
-      value: `${product.travelCapacity || "-"} kişi`,
-    },
-    { label: "WC Sayısı", value: "3" },
-    { label: "Uzunluk", value: product.length || "-" },
-    { label: "Yakıt Tipi", value: "Dizel" },
-    { label: "Gövde Tipi", value: "Fiber" },
-    { label: "Motor Gücü", value: "2x450 HP" },
   ];
 
   const descriptionText =
