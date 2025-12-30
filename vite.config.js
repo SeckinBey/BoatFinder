@@ -6,9 +6,19 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
+    // Ensure proper module resolution
+    modulePreload: {
+      polyfill: true,
+    },
     rollupOptions: {
       output: {
+        // Ensure proper initialization order
+        format: 'es',
         manualChunks: (id) => {
+          // Ensure supabaseClient stays in main bundle to avoid initialization issues
+          if (id.includes("lib/supabaseClient")) {
+            return undefined; // Keep in main bundle
+          }
           // React ve React-DOM'u ayrı chunk'a ayır
           if (
             id.includes("node_modules/react/") ||
@@ -73,6 +83,11 @@ export default defineConfig({
     },
     // Chunk size uyarı limitini artır (manuel chunking yaptığımız için)
     chunkSizeWarningLimit: 600,
+    // CommonJS dönüşümünü optimize et
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
   },
   test: {
     globals: true,
