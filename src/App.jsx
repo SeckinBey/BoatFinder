@@ -98,7 +98,10 @@ export default function App() {
                   />
                   <Route path="bookings" element={<AdminBookings />} />
                   <Route path="bookings/new" element={<AdminBookingsNew />} />
-                  <Route path="bookings/edit/:id" element={<AdminBookingsEdit />} />
+                  <Route
+                    path="bookings/edit/:id"
+                    element={<AdminBookingsEdit />}
+                  />
                 </Route>
               </Routes>
             </Suspense>

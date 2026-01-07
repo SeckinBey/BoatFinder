@@ -178,7 +178,9 @@ export async function createBooking(bookingData) {
 
     if (!availability.available) {
       throw new Error(
-        `Bu tekne seçilen tarihler arasında müsait değil. Çakışan rezervasyonlar: ${availability.conflictingBookings.map((b) => b.musteriAdSoyad).join(", ")}`
+        `Bu tekne seçilen tarihler arasında müsait değil. Çakışan rezervasyonlar: ${availability.conflictingBookings
+          .map((b) => b.musteriAdSoyad)
+          .join(", ")}`
       );
     }
 
@@ -244,7 +246,11 @@ export async function createBooking(bookingData) {
 export async function updateBooking(id, bookingData) {
   try {
     // Eğer tarih değişikliği varsa müsaitlik kontrolü yap
-    if (bookingData.girisTarihi || bookingData.cikisTarihi || bookingData.tekneId) {
+    if (
+      bookingData.girisTarihi ||
+      bookingData.cikisTarihi ||
+      bookingData.tekneId
+    ) {
       // Mevcut rezervasyonu al
       const currentBooking = await getBooking(id);
       if (!currentBooking) {
@@ -264,7 +270,9 @@ export async function updateBooking(id, bookingData) {
 
       if (!availability.available) {
         throw new Error(
-          `Bu tekne seçilen tarihler arasında müsait değil. Çakışan rezervasyonlar: ${availability.conflictingBookings.map((b) => b.musteriAdSoyad).join(", ")}`
+          `Bu tekne seçilen tarihler arasında müsait değil. Çakışan rezervasyonlar: ${availability.conflictingBookings
+            .map((b) => b.musteriAdSoyad)
+            .join(", ")}`
         );
       }
     }
@@ -353,7 +361,7 @@ export async function deleteBooking(id) {
       console.error("Supabase delete error:", error);
       throw new Error(
         error.message ||
-        `Silme işlemi başarısız: ${error.code || "Bilinmeyen hata"}`
+          `Silme işlemi başarısız: ${error.code || "Bilinmeyen hata"}`
       );
     }
 
@@ -464,16 +472,16 @@ function transformBookingData(data) {
     // İlişkisel veri
     boat: data.boats
       ? {
-        id: data.boats.id,
-        name: data.boats.name,
-        title: data.boats.title,
-        images: data.boats.images || [],
-        locationId: data.boats.location_id,
-        personCapacity: data.boats.person_capacity,
-        travelCapacity: data.boats.travel_capacity,
-        location: data.boats.locations,
-        type: data.boats.boat_types,
-      }
+          id: data.boats.id,
+          name: data.boats.name,
+          title: data.boats.title,
+          images: data.boats.images || [],
+          locationId: data.boats.location_id,
+          personCapacity: data.boats.person_capacity,
+          travelCapacity: data.boats.travel_capacity,
+          location: data.boats.locations,
+          type: data.boats.boat_types,
+        }
       : null,
   };
 }

@@ -6,7 +6,8 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   XMarkIcon,
-  CalendarIcon, CalendarIcon as CalendarIconSolid
+  CalendarIcon,
+  CalendarIcon as CalendarIconSolid,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -90,8 +91,9 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-full w-64 bg-linear-to-b from-gray-900 to-gray-800 text-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0`}
+        className={`fixed left-0 top-0 h-full w-64 bg-linear-to-b from-gray-900 to-gray-800 text-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
       >
         {/* Logo/Brand Section with Close Button */}
         <div className="px-6 py-6 border-b border-gray-700 flex items-center justify-between">
@@ -125,10 +127,11 @@ export default function AdminSidebar({ isOpen, onClose }) {
                 key={item.path}
                 to={item.path}
                 onClick={handleLinkClick}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active
-                  ? "bg-indigo-600 text-white shadow-lg"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                  }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? "bg-indigo-600 text-white shadow-lg"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                }`}
               >
                 <IconComponent className="h-5 w-5" />
                 <span className="text-sm font-medium">{item.label}</span>
