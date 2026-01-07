@@ -1,0 +1,32 @@
+@import "tailwindcss";
+:root {
+  --swiper-theme-color: #f1f1f1 !important;
+  --swiper-pagination-bullet-inactive-opacity: 0.5;
+  --swiper-pagination-bullet-inactive-color: #f1f1f1;
+}
+
+body{
+  background: #F6F8FF;
+}
+
+.custom{
+  background: #F6F8FF;
+}
+
+.price{
+  background: #F2F5F7;
+}
+
+/* Progress bar animation */
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-progress {
+  animation: progress 2s ease-in-out infinite;
+}
