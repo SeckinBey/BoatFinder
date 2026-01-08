@@ -116,3 +116,38 @@ export const ODEME_YONTEMI = {
   HAVALE: "Havale",
   KREDI_KARTI: "Kredi Kartı",
 };
+
+// WhatsApp Constants
+export const WHATSAPP = {
+  PHONE_NUMBER: "905427204110", // Antalya Tekne Kiralama'ın WhatsApp numarası
+  MESSAGE_TEMPLATE: (bookingData) => {
+    const formatDate = (dateString) => {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      return date.toLocaleDateString("tr-TR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    };
+
+    return `Merhaba, ${bookingData.tekneAdi} için rezervasyon talebim var.
+
+*Rezervasyon Detayları:*
+• Tekne: ${bookingData.tekneAdi}
+• Giriş Tarihi: ${formatDate(bookingData.girisTarihi)}
+• Çıkış Tarihi: ${formatDate(bookingData.cikisTarihi)}
+• Yolcu Sayısı: ${bookingData.yolcuSayisi} kişi
+
+*İletişim Bilgileri:*
+• Ad Soyad: ${bookingData.musteriAdSoyad}
+• Telefon: ${bookingData.musteriTelefon}
+• E-posta: ${bookingData.musteriEposta}
+
+${
+  bookingData.ozelIstekler
+    ? `💬 *Özel İstekler:*\n${bookingData.ozelIstekler}\n\n`
+    : ""
+}En kısa sürede dönüş yapabilir misiniz? Teşekkürler!`;
+  },
+};

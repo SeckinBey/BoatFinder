@@ -16,7 +16,7 @@ export default function HowToRent() {
           <div>
             <h2 className="text-3xl font-bold mb-6">Nasıl tekne kiralanır?</h2>
             <p className="text-lg text-gray-700">
-              TripFinder ile tekne kiralamak çok kolay!<br></br> İhtiyaçlarınıza
+              Antalya Tekne Kiralama ile tekne kiralamak çok kolay!<br></br> İhtiyaçlarınıza
               en uygun tekneyi seçin, rezervasyonunuzu yapın ve denizin keyfini
               çıkarın.
             </p>

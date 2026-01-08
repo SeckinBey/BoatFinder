@@ -112,3 +112,46 @@ export const bookingFormSchema = z
       path: ["alinan_depozito"],
     }
   );
+
+// Kullanıcı rezervasyon formu için schema (sadece müşteri bilgileri ve tarih)
+export const customerBookingSchema = z
+  .object({
+    tekneId: z.number().int().positive("Tekne seçimi zorunludur"),
+    girisTarihi: z.string().min(1, "Giriş tarihi seçiniz"),
+    cikisTarihi: z.string().min(1, "Çıkış tarihi seçiniz"),
+    musteriAdSoyad: z
+      .string()
+      .min(2, "Ad soyad en az 2 karakter olmalıdır")
+      .max(255, "Ad soyad en fazla 255 karakter olabilir"),
+    musteriTelefon: z
+      .string()
+      .min(10, "Telefon numarası en az 10 karakter olmalıdır")
+      .max(20, "Telefon numarası en fazla 20 karakter olabilir")
+      .regex(/^[\d\s\-\+\(\)]+$/, "Geçerli bir telefon numarası girin"),
+    musteriEposta: z
+      .string()
+      .email("Geçerli bir e-posta adresi girin")
+      .max(255, "E-posta en fazla 255 karakter olabilir"),
+    yolcuSayisi: z
+      .number()
+      .int("Yolcu sayısı tam sayı olmalıdır")
+      .positive("Yolcu sayısı 0'dan büyük olmalıdır")
+      .max(100, "Yolcu sayısı çok yüksek"),
+    ozelIstekler: z
+      .string()
+      .max(5000, "Özel istekler çok uzun")
+      .optional()
+      .nullable(),
+  })
+  .refine(
+    (data) => {
+      // Çıkış tarihi giriş tarihinden sonra olmalı
+      const giris = new Date(data.girisTarihi);
+      const cikis = new Date(data.cikisTarihi);
+      return cikis > giris;
+    },
+    {
+      message: "Çıkış tarihi giriş tarihinden sonra olmalıdır",
+      path: ["cikisTarihi"],
+    }
+  );

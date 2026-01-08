@@ -17,8 +17,8 @@ export default function CardSlider() {
         <div>
           <h2 className="text-3xl font-bold mb-6">TripFinder'a Hoş Geldiniz</h2>
           <p className="text-lg text-gray-700">
-            TripFinder ile en iyi tekne turlarını keşfedin ve unutulmaz deniz
-            maceralarına atılın!
+            Antalya Tekne Kiralama ile en iyi tekne turlarını keşfedin ve
+            unutulmaz deniz maceralarına atılın!
           </p>
         </div>
       </header>

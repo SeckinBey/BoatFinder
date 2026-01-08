@@ -86,6 +86,13 @@ export default function SignIn() {
               {isLoading ? "Giriş yapılıyor..." : "Sign In"}
             </button>
           </form>
+          <button
+            type="button"
+            onClick={() => navigate(ROUTES.HOME)}
+            className="inline-flex font-medium items-center justify-center focus:outline-none transition duration-200 active:scale-90 px-8 py-2.5 text-base rounded-md border border-gray-300 bg-transparent text-gray-900 hover:enabled:bg-gray-50 focus:ring-gray-900/30 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     </>

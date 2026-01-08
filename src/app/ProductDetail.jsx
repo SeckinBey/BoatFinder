@@ -15,8 +15,11 @@ import DataWrapper from "../components/DataWrapper.jsx";
 import { useSEO } from "../hooks/useSEO.js";
 import OptimizedImage from "../components/OptimizedImage.jsx";
 
-// TODO: Rezervasyon sistemi gelecekte implement edilecek
-// Booking service ve form validation eklenecek
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { customerBookingSchema } from "../schemas/bookingSchemas.js";
+import { useToastContext } from "../context/ToastContext.jsx";
+import { WHATSAPP } from "../constants/index.js";
 
 export default function ProductDetail() {
   const { product, isLoading, error } = useProduct();
@@ -79,6 +82,71 @@ export default function ProductDetail() {
   const [faqOpen, setFaqOpen] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+  const { success, error: showError } = useToastContext();
+
+  // Rezervasyon formu
+  const bookingForm = useForm({
+    resolver: zodResolver(customerBookingSchema),
+    defaultValues: {
+      tekneId: product?.id || 0,
+      girisTarihi: "",
+      cikisTarihi: "",
+      musteriAdSoyad: "",
+      musteriTelefon: "",
+      musteriEposta: "",
+      yolcuSayisi: 1,
+      ozelIstekler: "",
+    },
+  });
+
+  // Product yüklendiğinde form'u güncelle
+  useEffect(() => {
+    if (product?.id) {
+      bookingForm.reset({
+        tekneId: product.id,
+        girisTarihi: "",
+        cikisTarihi: "",
+        musteriAdSoyad: "",
+        musteriTelefon: "",
+        musteriEposta: "",
+        yolcuSayisi: 1,
+        ozelIstekler: "",
+      });
+    }
+  }, [product?.id, bookingForm]);
+
+  const { handleSubmit: handleBookingSubmit, reset: resetBooking } = bookingForm;
+
+  // Rezervasyon gönderme - WhatsApp'a yönlendirme
+  const onBookingSubmit = async (data) => {
+    // Form verilerini WhatsApp mesaj formatına çevir
+    const bookingData = {
+      tekneAdi: product.title || product.name || "Tekne",
+      girisTarihi: data.girisTarihi,
+      cikisTarihi: data.cikisTarihi,
+      yolcuSayisi: data.yolcuSayisi,
+      musteriAdSoyad: data.musteriAdSoyad,
+      musteriTelefon: data.musteriTelefon,
+      musteriEposta: data.musteriEposta,
+      ozelIstekler: data.ozelIstekler || "",
+    };
+
+    // WhatsApp mesajını oluştur
+    const message = WHATSAPP.MESSAGE_TEMPLATE(bookingData);
+    
+    // WhatsApp linkini oluştur
+    const whatsappUrl = `https://wa.me/${WHATSAPP.PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
+    
+    // WhatsApp'ı yeni sekmede aç
+    window.open(whatsappUrl, "_blank");
+    
+    // Formu temizle
+    bookingForm.reset();
+    setIsPaymentModalOpen(false);
+    
+    success("WhatsApp üzerinden iletişime geçiliyor...");
+  };
+
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isPaymentModalOpen) {
@@ -113,6 +181,9 @@ export default function ProductDetail() {
         setFaqOpen={setFaqOpen}
         isPaymentModalOpen={isPaymentModalOpen}
         setIsPaymentModalOpen={setIsPaymentModalOpen}
+        bookingForm={bookingForm}
+        handleBookingSubmit={handleBookingSubmit}
+        onBookingSubmit={onBookingSubmit}
       />
     </DataWrapper>
   );
@@ -134,6 +205,9 @@ function ProductDetailContent({
   setFaqOpen,
   isPaymentModalOpen,
   setIsPaymentModalOpen,
+  bookingForm,
+  handleBookingSubmit,
+  onBookingSubmit,
 }) {
   // ✅ Burada product kesinlikle var, güvenle kullanabiliriz
   const mappedAmenities = getAmenitiesByIds(product.amenityIds, amenitiesList);
@@ -449,69 +523,142 @@ function ProductDetailContent({
 
             {/* Payment Card - Desktop: Sticky sidebar, Mobile: Hidden (shown as bottom bar + modal) */}
             <aside className="hidden lg:block lg:sticky lg:top-50 lg:self-start">
-              <div className="space-y-4 rounded-2xl bg-white p-6 shadow-lg">
-                <div className="flex items-center justify-between">
-                  <p className="text-lg font-semibold text-gray-900">
-                    {product.price} €{" "}
-                    <span className="text-sm font-normal">
-                      / {product.durationType}
-                    </span>
-                  </p>
-                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs text-green-700">
-                    Uygun
-                  </span>
-                </div>
-                <div className="grid gap-3">
-                  <label className="text-sm font-medium text-gray-700">
-                    Tarih Aralığı
-                    <input
-                      type="date"
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                    />
-                  </label>
-                  <label className="text-sm font-medium text-gray-700">
-                    Konaklama Türü
-                    <select className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
-                      <option>Günübirlik</option>
-                      <option>Konaklamalı</option>
-                    </select>
-                  </label>
-                  <label className="text-sm font-medium text-gray-700">
-                    Saat Aralığı
-                    <input
-                      type="time"
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                    />
-                  </label>
-                </div>
-                <button className="w-full rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md hover:bg-blue-700">
-                  Ücretsiz Talep Gönder
-                </button>
-                <div className="rounded-xl bg-gray-50 p-4">
-                  <h3 className="mb-2 text-sm font-semibold text-gray-900">
-                    Ek Hizmetler
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    {addons.map((addon) => (
-                      <li
-                        key={addon.label}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300"
-                          />
-                          <span>{addon.label}</span>
-                        </div>
-                        <span className="font-semibold text-gray-900">
-                          {addon.price}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              <FormProvider {...bookingForm}>
+                <form
+                  onSubmit={handleBookingSubmit(onBookingSubmit)}
+                  className="space-y-4 rounded-2xl bg-white p-6 shadow-lg"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-semibold text-gray-900">
+                      {product.price} €{" "}
+                      <span className="text-sm font-normal">
+                        / {product.durationType}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="grid gap-3">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Giriş Tarihi <span className="text-red-500">*</span>
+                        <input
+                          type="date"
+                          {...bookingForm.register("girisTarihi")}
+                          min={new Date().toISOString().split("T")[0]}
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                        />
+                        {bookingForm.formState.errors.girisTarihi && (
+                          <p className="mt-1 text-xs text-red-600">
+                            {bookingForm.formState.errors.girisTarihi.message}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Çıkış Tarihi <span className="text-red-500">*</span>
+                        <input
+                          type="date"
+                          {...bookingForm.register("cikisTarihi")}
+                          min={
+                            bookingForm.watch("girisTarihi") ||
+                            new Date().toISOString().split("T")[0]
+                          }
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                        />
+                        {bookingForm.formState.errors.cikisTarihi && (
+                          <p className="mt-1 text-xs text-red-600">
+                            {bookingForm.formState.errors.cikisTarihi.message}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Yolcu Sayısı <span className="text-red-500">*</span>
+                        <input
+                          type="number"
+                          min="1"
+                          max={product.personCapacity || product.travelCapacity || 100}
+                          {...bookingForm.register("yolcuSayisi", {
+                            valueAsNumber: true,
+                          })}
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                        />
+                        {bookingForm.formState.errors.yolcuSayisi && (
+                          <p className="mt-1 text-xs text-red-600">
+                            {bookingForm.formState.errors.yolcuSayisi.message}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Ad Soyad <span className="text-red-500">*</span>
+                        <input
+                          type="text"
+                          {...bookingForm.register("musteriAdSoyad")}
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          placeholder="Adınız ve soyadınız"
+                        />
+                        {bookingForm.formState.errors.musteriAdSoyad && (
+                          <p className="mt-1 text-xs text-red-600">
+                            {bookingForm.formState.errors.musteriAdSoyad.message}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Telefon <span className="text-red-500">*</span>
+                        <input
+                          type="tel"
+                          {...bookingForm.register("musteriTelefon")}
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          placeholder="05XX XXX XX XX"
+                        />
+                        {bookingForm.formState.errors.musteriTelefon && (
+                          <p className="mt-1 text-xs text-red-600">
+                            {bookingForm.formState.errors.musteriTelefon.message}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        E-posta <span className="text-red-500">*</span>
+                        <input
+                          type="email"
+                          {...bookingForm.register("musteriEposta")}
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          placeholder="ornek@email.com"
+                        />
+                        {bookingForm.formState.errors.musteriEposta && (
+                          <p className="mt-1 text-xs text-red-600">
+                            {bookingForm.formState.errors.musteriEposta.message}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Özel İstekler (Opsiyonel)
+                        <textarea
+                          {...bookingForm.register("ozelIstekler")}
+                          rows={3}
+                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          placeholder="Varsa özel isteklerinizi buraya yazabilirsiniz..."
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md hover:bg-blue-700"
+                  >
+                    WhatsApp ile İletişime Geç
+                  </button>
+                </form>
+              </FormProvider>
             </aside>
           </section>
 
@@ -559,69 +706,158 @@ function ProductDetailContent({
                     <span className="text-xl">×</span>
                   </button>
                 </div>
-                <div className="space-y-4 p-6">
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-semibold text-gray-900">
-                      {product.price} €{" "}
-                      <span className="text-sm font-normal">
-                        / {product.durationType}
-                      </span>
-                    </p>
-                    <span className="rounded-full bg-green-50 px-3 py-1 text-xs text-green-700">
-                      Uygun
-                    </span>
-                  </div>
-                  <div className="grid gap-3">
-                    <label className="text-sm font-medium text-gray-700">
-                      Tarih Aralığı
-                      <input
-                        type="date"
-                        className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                      />
-                    </label>
-                    <label className="text-sm font-medium text-gray-700">
-                      Konaklama Türü
-                      <select className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
-                        <option>Günübirlik</option>
-                        <option>Konaklamalı</option>
-                      </select>
-                    </label>
-                    <label className="text-sm font-medium text-gray-700">
-                      Saat Aralığı
-                      <input
-                        type="time"
-                        className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                      />
-                    </label>
-                  </div>
-                  <button className="w-full rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md hover:bg-blue-700">
-                    Ücretsiz Talep Gönder
-                  </button>
-                  <div className="rounded-xl bg-gray-50 p-4">
-                    <h3 className="mb-2 text-sm font-semibold text-gray-900">
-                      Ek Hizmetler
-                    </h3>
-                    <ul className="space-y-2 text-sm text-gray-700">
-                      {addons.map((addon) => (
-                        <li
-                          key={addon.label}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              className="h-4 w-4 rounded border-gray-300"
-                            />
-                            <span>{addon.label}</span>
-                          </div>
-                          <span className="font-semibold text-gray-900">
-                            {addon.price}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <FormProvider {...bookingForm}>
+                  <form
+                    onSubmit={handleBookingSubmit(onBookingSubmit)}
+                    className="space-y-4 p-6"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg font-semibold text-gray-900">
+                        {product.price} €{" "}
+                        <span className="text-sm font-normal">
+                          / {product.durationType}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="grid gap-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Giriş Tarihi <span className="text-red-500">*</span>
+                          <input
+                            type="date"
+                            {...bookingForm.register("girisTarihi")}
+                            min={new Date().toISOString().split("T")[0]}
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          />
+                          {bookingForm.formState.errors.girisTarihi && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {bookingForm.formState.errors.girisTarihi.message}
+                            </p>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Çıkış Tarihi <span className="text-red-500">*</span>
+                          <input
+                            type="date"
+                            {...bookingForm.register("cikisTarihi")}
+                            min={
+                              bookingForm.watch("girisTarihi") ||
+                              new Date().toISOString().split("T")[0]
+                            }
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          />
+                          {bookingForm.formState.errors.cikisTarihi && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {bookingForm.formState.errors.cikisTarihi.message}
+                            </p>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Yolcu Sayısı <span className="text-red-500">*</span>
+                          <input
+                            type="number"
+                            min="1"
+                            max={
+                              product.personCapacity ||
+                              product.travelCapacity ||
+                              100
+                            }
+                            {...bookingForm.register("yolcuSayisi", {
+                              valueAsNumber: true,
+                            })}
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                          />
+                          {bookingForm.formState.errors.yolcuSayisi && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {
+                                bookingForm.formState.errors.yolcuSayisi
+                                  .message
+                              }
+                            </p>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Ad Soyad <span className="text-red-500">*</span>
+                          <input
+                            type="text"
+                            {...bookingForm.register("musteriAdSoyad")}
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                            placeholder="Adınız ve soyadınız"
+                          />
+                          {bookingForm.formState.errors.musteriAdSoyad && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {
+                                bookingForm.formState.errors.musteriAdSoyad
+                                  .message
+                              }
+                            </p>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Telefon <span className="text-red-500">*</span>
+                          <input
+                            type="tel"
+                            {...bookingForm.register("musteriTelefon")}
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                            placeholder="05XX XXX XX XX"
+                          />
+                          {bookingForm.formState.errors.musteriTelefon && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {
+                                bookingForm.formState.errors.musteriTelefon
+                                  .message
+                              }
+                            </p>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          E-posta <span className="text-red-500">*</span>
+                          <input
+                            type="email"
+                            {...bookingForm.register("musteriEposta")}
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                            placeholder="ornek@email.com"
+                          />
+                          {bookingForm.formState.errors.musteriEposta && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {
+                                bookingForm.formState.errors.musteriEposta
+                                  .message
+                              }
+                            </p>
+                          )}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Özel İstekler (Opsiyonel)
+                          <textarea
+                            {...bookingForm.register("ozelIstekler")}
+                            rows={3}
+                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                            placeholder="Varsa özel isteklerinizi buraya yazabilirsiniz..."
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md hover:bg-blue-700"
+                    >
+                      WhatsApp ile İletişime Geç
+                    </button>
+                  </form>
+                </FormProvider>
               </div>
             </>
           )}

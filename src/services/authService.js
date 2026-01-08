@@ -48,6 +48,12 @@ export async function getCurrentUser() {
     if (error) throw error;
     return user;
   } catch (error) {
+    // AuthSessionMissingError beklenen bir durumdur (kullanıcı giriş yapmamış olabilir)
+    // Bu hatayı sessizce handle ediyoruz
+    if (error?.name === "AuthSessionMissingError" || error?.message?.includes("Auth session missing")) {
+      return null;
+    }
+    // Diğer hatalar için console'a yazdır
     console.error("Error getting current user:", error);
     return null;
   }
