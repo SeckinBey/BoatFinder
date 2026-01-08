@@ -7,7 +7,6 @@ import {
   ArrowRightOnRectangleIcon,
   XMarkIcon,
   CalendarIcon,
-  CalendarIcon as CalendarIconSolid,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,

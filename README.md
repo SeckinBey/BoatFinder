@@ -1,16 +1,72 @@
-# React + Vite
+# TripFinder Boat App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite ile geliştirilmiş tekne kiralama ve tur hizmetleri uygulaması.
 
-Currently, two official plugins are available:
+## Kurulum
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. Bağımlılıkları Yükleyin
 
-## React Compiler
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. Environment Variables Ayarlayın
 
-## Expanding the ESLint configuration
+Proje root dizininde `.env` dosyası oluşturun:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_anon_key
+```
+
+**Supabase bilgilerinizi nereden bulabilirsiniz?**
+1. [Supabase Dashboard](https://app.supabase.com/)'a giriş yapın
+2. Projenizi seçin
+3. Settings > API bölümüne gidin
+4. `Project URL` ve `anon public` key'i kopyalayın
+
+### 3. Development Server'ı Başlatın
+
+```bash
+npm run dev
+```
+
+## Vercel Deployment
+
+Vercel'de deploy ederken environment variable'ları ayarlamanız gerekiyor:
+
+1. Vercel Dashboard'a gidin
+2. Projenizi seçin
+3. **Settings** > **Environment Variables** bölümüne gidin
+4. Aşağıdaki variable'ları ekleyin:
+
+   - **Name**: `VITE_SUPABASE_URL`
+     **Value**: Supabase projenizin URL'i
+   
+   - **Name**: `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+     **Value**: Supabase projenizin anon/public key'i
+
+5. **Environment** seçeneklerinden **Production**, **Preview**, ve **Development** için uygun olanları seçin
+6. **Save** butonuna tıklayın
+7. Yeni bir deployment tetikleyin (örneğin, bir commit push edin)
+
+**Önemli**: Vercel'de environment variable'ları ekledikten sonra yeni bir deployment yapmanız gerekiyor. Mevcut deployment'lar eski variable'larla build edilmiş olabilir.
+
+## Scripts
+
+- `npm run dev` - Development server'ı başlatır
+- `npm run build` - Production build oluşturur
+- `npm run preview` - Production build'i local'de test eder
+- `npm run lint` - ESLint ile kod kontrolü yapar
+- `npm test` - Testleri çalıştırır
+
+## Teknolojiler
+
+- React 19
+- Vite
+- React Router
+- TanStack Query (React Query)
+- Supabase
+- Tailwind CSS
+- Swiper
+- React Hook Form + Zod
