@@ -18,7 +18,7 @@ import { useFilters } from "../../context/FilterContext";
 import { useNavigate } from "react-router-dom";
 import OptimizedImage from "../../components/OptimizedImage.jsx";
 
-export default function HeroSection() {
+export default function HeroSection({ onImageLoad, onImageError }) {
   const { locations } = useStaticData();
 
   const {
@@ -76,6 +76,12 @@ export default function HeroSection() {
         sizes="100vw"
         className="absolute inset-0 h-full w-full bg-gray-lighter object-cover"
         loading="eager"
+        onLoad={(e) => {
+          onImageLoad?.(heroBg);
+        }}
+        onError={(e) => {
+          onImageError?.(heroBg);
+        }}
       />
       <form className="relative z-50 w-full max-w-[520px] rounded-xl bg-white/95 p-8 shadow-2xl backdrop-blur-sm sm:max-w-[440px] lg:max-w-[560px]">
         <div className="mb-6">

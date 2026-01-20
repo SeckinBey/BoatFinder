@@ -8,7 +8,13 @@ import { formatPriceEUR, getLocationName } from "../utils/helpers.js";
 import { getProductDetailRoute } from "../constants/index.js";
 import OptimizedImage from "./OptimizedImage.jsx";
 
-export default function SalesCard({ boatTypes, ship, locations }) {
+export default function SalesCard({
+  boatTypes,
+  ship,
+  locations,
+  onImageLoad,
+  onImageError,
+}) {
   const locationName = getLocationName(ship.locationId, locations);
   return (
     <div className="listing-card group/item relative inline-flex w-full flex-col rounded-2xl overflow-hidden bg-white shadow-lg transition hover:shadow-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-slate-300">
@@ -32,6 +38,17 @@ export default function SalesCard({ boatTypes, ship, locations }) {
                     loading={idx === 0 ? "eager" : "lazy"}
                     fetchPriority={idx === 0 ? "high" : "auto"}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    onLoad={(e) => {
+                      // Sadece ilk görseli kritik olarak say
+                      if (idx === 0) {
+                        onImageLoad?.(img);
+                      }
+                    }}
+                    onError={(e) => {
+                      if (idx === 0) {
+                        onImageError?.(img);
+                      }
+                    }}
                   />
                 </SwiperSlide>
               ))}

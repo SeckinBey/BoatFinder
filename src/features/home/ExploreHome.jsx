@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import bannerImg from "../../assets/images/2.jpg";
 import OptimizedImage from "../../components/OptimizedImage";
 
-export default function ExploreHome() {
+export default function ExploreHome({ onImageLoad, onImageError }) {
   return (
     <div className="relative px-4 mt-4 md:px-12 md:py-12 lg:px-14 xl:px-20 xl:py-16 3xl:px-32 3xl:py-20 4xl:px-40 4xl:py-[88px] from-black/10 to-black/60 before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-full before:bg-gradient-to-b md:before:rounded-2xl md:before:bg-gradient-to-r xl:before:hidden 4xl:!py-[132px]">
       <div className="relative md:px-12 md:py-12 lg:px-14 xl:px-20 xl:py-16 3xl:px-32 3xl:py-20 4xl:px-40 4xl:py-[88px]">
@@ -12,6 +12,12 @@ export default function ExploreHome() {
           className="absolute aspect-18/5 text-transparent bg-gray-lighter object-cover h-full w-full inset-0 rounded-2xl"
           sizes="100vw"
           src={bannerImg}
+          onLoad={(e) => {
+            onImageLoad?.(bannerImg);
+          }}
+          onError={(e) => {
+            onImageError?.(bannerImg);
+          }}
         />
         <div className="relative m-auto md:ml-0 max-w-[450px] xl:max-w-[513px] px-8 py-9 md:px-0 md:py-0 flex flex-col justify-center md:justify-start z-20">
           <h2 className="text-center text-2xl font-bold text-white md:text-left md:text-3xl xl:mb-6 3xl:text-5xl mb-3">

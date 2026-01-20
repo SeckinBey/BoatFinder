@@ -8,7 +8,7 @@ import { useStaticData } from "../../hooks/useStaticData.js";
 import OptimizedImage from "../../components/OptimizedImage.jsx";
 import placeholderImage from "../../assets/images/placeholder.svg";
 
-export default function CardSlider() {
+export default function CardSlider({ onImageLoad, onImageError }) {
   const { locations } = useStaticData();
 
   return (
@@ -58,6 +58,12 @@ export default function CardSlider() {
                     className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                     loading="lazy"
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    onLoad={(e) => {
+                      onImageLoad?.(imageSrc);
+                    }}
+                    onError={(e) => {
+                      onImageError?.(imageSrc);
+                    }}
                   />
 
                   <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-6 text-white">

@@ -7,7 +7,7 @@ import { useProductSlice } from "../../hooks/useProductSlice.js";
 import { useStaticData } from "../../hooks/useStaticData.js";
 import DataWrapper from "../../components/DataWrapper.jsx";
 
-export default function HotSales() {
+export default function HotSales({ onImageLoad, onImageError }) {
   const { products, isLoading, error } = useProductSlice(8);
   const { locations } = useStaticData();
 
@@ -48,6 +48,8 @@ export default function HotSales() {
               boatTypes={ship.type?.name || "Bilinmiyor"}
               ship={ship}
               locations={locations}
+              onImageLoad={onImageLoad}
+              onImageError={onImageError}
             />
           ))}
         </div>
