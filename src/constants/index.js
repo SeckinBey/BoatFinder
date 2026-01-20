@@ -142,7 +142,6 @@ export const WHATSAPP = {
 *İletişim Bilgileri:*
 • Ad Soyad: ${bookingData.musteriAdSoyad}
 • Telefon: ${bookingData.musteriTelefon}
-• E-posta: ${bookingData.musteriEposta}
 
 ${
   bookingData.ozelIstekler

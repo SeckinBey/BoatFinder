@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
 :root {
   --swiper-theme-color: #f1f1f1 !important;
   --swiper-pagination-bullet-inactive-opacity: 0.5;

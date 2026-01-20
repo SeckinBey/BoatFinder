@@ -3,6 +3,7 @@ import { useStaticData } from "../../hooks/useStaticData.js";
 import { Fragment } from "react";
 import { Listbox, Transition, Popover } from "@headlessui/react";
 import { ChevronDownIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { tr } from "react-day-picker/locale";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
@@ -223,7 +224,9 @@ export default function HeroSection() {
                   <div className="flex w-full">
                     <span className="text-base font-semibold text-gray-900">
                       {departureDate
-                        ? format(departureDate, "EEE dd / MM / yy")
+                        ? format(departureDate, "EEE dd / MM / yy", {
+                            locale: tr,
+                          })
                         : "Kalkış tarihini seçin"}
                     </span>
                   </div>
@@ -245,6 +248,10 @@ export default function HeroSection() {
                       onSelect={setDepartureDate}
                       disabled={(date) => date < new Date()}
                       className="rounded-lg"
+                      animate
+                      navLayout="around"
+                      showOutsideDays
+                      locale={tr}
                     />
                   </Popover.Panel>
                 </Transition>

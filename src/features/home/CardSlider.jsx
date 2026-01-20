@@ -15,7 +15,9 @@ export default function CardSlider() {
     <section className="lg:container-fluid mt-12 px-4 sm:pl-6 lg:mt-16 ">
       <header className="flex justify-between mb-4 md:mb-5 xl:mb-6">
         <div>
-          <h2 className="text-3xl font-bold mb-6">TripFinder'a Hoş Geldiniz</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            Antalya Tekne Kiralama'ya Hoş Geldiniz
+          </h2>
           <p className="text-lg text-gray-700">
             Antalya Tekne Kiralama ile en iyi tekne turlarını keşfedin ve
             unutulmaz deniz maceralarına atılın!

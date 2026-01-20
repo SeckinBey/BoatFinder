@@ -6,7 +6,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useSearchParams, useParams } from "react-router-dom";
+import { useSearchParams, useParams, useLocation } from "react-router-dom";
 import {
   getLocationById,
   getLocationByName,
@@ -22,6 +22,7 @@ const FilterContext = createContext(null);
 export function FilterProvider({ children }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { locationName } = useParams();
+  const location = useLocation();
   const { locations } = useStaticData();
 
   // Filter state'leri
@@ -36,6 +37,17 @@ export function FilterProvider({ children }) {
   // URL'den state'e sync için ref (infinite loop önlemek için)
   const isSyncingFromURL = useRef(false);
 
+  // ✅ Ana sayfaya geldiğinde filtreleri temizle
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setSelectedLocationState(null);
+      setDepartureDateState(null);
+      setBoatTypeState(null);
+      setNumberOfPeopleState(DEFAULTS.NUMBER_OF_PEOPLE);
+      setSearchTermState("");
+    }
+  }, [location.pathname]);
+
   // URL query params'tan filter state'lerini sync et
   useEffect(() => {
     isSyncingFromURL.current = true;
@@ -44,30 +56,43 @@ export function FilterProvider({ children }) {
     const date = queryParams.date;
     const people = queryParams.people;
 
+    // ✅ Sadece Explore sayfasındayken URL'den sync et
+    const isExplorePage = location.pathname.includes("/explore");
+
+    if (!isExplorePage) {
+      // Explore sayfasında değilsek, sync işlemini atla
+      setTimeout(() => {
+        isSyncingFromURL.current = false;
+      }, 0);
+      return;
+    }
+
     // Location sync
     if (locationId) {
       const locationIdNum = safeParseInt(locationId);
-      const location = getLocationById(locationIdNum, locations);
-      if (location) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+      const locationObj = getLocationById(locationIdNum, locations);
+      if (locationObj) {
         setSelectedLocationState((prev) => {
-          if (prev?.id !== location.id) {
-            return location;
+          if (prev?.id !== locationObj.id) {
+            return locationObj;
           }
           return prev;
         });
       }
     } else if (locationName) {
       // Path parametresinden location set et (CardSlider'dan)
-      const location = getLocationByName(locationName, locations);
-      if (location) {
+      const locationObj = getLocationByName(locationName, locations);
+      if (locationObj) {
         setSelectedLocationState((prev) => {
-          if (prev?.id !== location.id) {
-            return location;
+          if (prev?.id !== locationObj.id) {
+            return locationObj;
           }
           return prev;
         });
       }
+    } else {
+      // ✅ URL'de location yoksa temizle
+      setSelectedLocationState(null);
     }
 
     // Date sync
@@ -81,6 +106,9 @@ export function FilterProvider({ children }) {
           return prev;
         });
       }
+    } else {
+      // ✅ URL'de date yoksa temizle
+      setDepartureDateState(null);
     }
 
     // People sync
@@ -92,13 +120,16 @@ export function FilterProvider({ children }) {
         }
         return prev;
       });
+    } else {
+      // ✅ URL'de people yoksa default'a döndür
+      setNumberOfPeopleState(DEFAULTS.NUMBER_OF_PEOPLE);
     }
 
     // Sync işlemi bitti
     setTimeout(() => {
       isSyncingFromURL.current = false;
     }, 0);
-  }, [searchParams, locationName, locations]);
+  }, [searchParams, locationName, locations, location.pathname]);
 
   // State'ten URL'e sync (sadece Explore sayfasındaysa ve URL'den gelmiyorsa)
   useEffect(() => {

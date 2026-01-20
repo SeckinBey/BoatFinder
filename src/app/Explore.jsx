@@ -1,5 +1,4 @@
-// src/app/Explore.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSEO } from "../hooks/useSEO.js";
 import { useParams } from "react-router-dom";
 import { getLocationByName } from "../utils/helpers.js";
@@ -35,6 +34,22 @@ export default function Explore() {
     setNumberOfPeople,
   } = useFilters();
 
+  // ✅ Location bilgisini al (URL parametresinden) - locations yüklenene kadar null döndür
+  const currentLocation =
+    locationName && locations
+      ? getLocationByName(locationName, locations)
+      : null;
+
+  // ✅ URL'den gelen location'ı FilterContext'e set et
+  useEffect(() => {
+    if (
+      currentLocation &&
+      (!selectedLocation || selectedLocation.id !== currentLocation.id)
+    ) {
+      setSelectedLocation(currentLocation);
+    }
+  }, [currentLocation, selectedLocation, setSelectedLocation]);
+
   // Filtrelenmiş boats'u hesapla
   const {
     products: filteredBoats,
@@ -47,14 +62,9 @@ export default function Explore() {
     searchTerm,
   });
 
-  // ✅ Location bilgisini al (URL parametresinden) - locations yüklenene kadar null döndür
-  const currentLocation =
-    locationName && locations
-      ? getLocationByName(locationName, locations)
-      : null;
-
   // ✅ SEO için title ve description oluştur
-  const locationTitle = currentLocation?.name || "Tüm Lokasyonlar";
+  const locationTitle =
+    currentLocation?.name || selectedLocation?.name || "Tüm Lokasyonlar";
   const boatTypeName =
     boatType && boatTypes
       ? boatTypes.find((bt) => bt.id === boatType)?.name

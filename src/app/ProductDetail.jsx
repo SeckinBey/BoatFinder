@@ -14,7 +14,6 @@ import { useProduct } from "../hooks/useProduct.js";
 import DataWrapper from "../components/DataWrapper.jsx";
 import { useSEO } from "../hooks/useSEO.js";
 import OptimizedImage from "../components/OptimizedImage.jsx";
-
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { customerBookingSchema } from "../schemas/bookingSchemas.js";
@@ -93,7 +92,6 @@ export default function ProductDetail() {
       cikisTarihi: "",
       musteriAdSoyad: "",
       musteriTelefon: "",
-      musteriEposta: "",
       yolcuSayisi: 1,
       ozelIstekler: "",
     },
@@ -108,14 +106,13 @@ export default function ProductDetail() {
         cikisTarihi: "",
         musteriAdSoyad: "",
         musteriTelefon: "",
-        musteriEposta: "",
         yolcuSayisi: 1,
         ozelIstekler: "",
       });
     }
   }, [product?.id, bookingForm]);
 
-  const { handleSubmit: handleBookingSubmit, reset: resetBooking } = bookingForm;
+  const { handleSubmit: handleBookingSubmit } = bookingForm;
 
   // Rezervasyon gönderme - WhatsApp'a yönlendirme
   const onBookingSubmit = async (data) => {
@@ -127,23 +124,24 @@ export default function ProductDetail() {
       yolcuSayisi: data.yolcuSayisi,
       musteriAdSoyad: data.musteriAdSoyad,
       musteriTelefon: data.musteriTelefon,
-      musteriEposta: data.musteriEposta,
       ozelIstekler: data.ozelIstekler || "",
     };
 
     // WhatsApp mesajını oluştur
     const message = WHATSAPP.MESSAGE_TEMPLATE(bookingData);
-    
+
     // WhatsApp linkini oluştur
-    const whatsappUrl = `https://wa.me/${WHATSAPP.PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-    
+    const whatsappUrl = `https://wa.me/${
+      WHATSAPP.PHONE_NUMBER
+    }?text=${encodeURIComponent(message)}`;
+
     // WhatsApp'ı yeni sekmede aç
     window.open(whatsappUrl, "_blank");
-    
+
     // Formu temizle
     bookingForm.reset();
     setIsPaymentModalOpen(false);
-    
+
     success("WhatsApp üzerinden iletişime geçiliyor...");
   };
 
@@ -209,7 +207,6 @@ function ProductDetailContent({
   handleBookingSubmit,
   onBookingSubmit,
 }) {
-  // ✅ Burada product kesinlikle var, güvenle kullanabiliriz
   const mappedAmenities = getAmenitiesByIds(product.amenityIds, amenitiesList);
 
   const focusTags = ["Kaptanlı Kiralama", "%50 Ön Ödeme", "2024 Model"];
@@ -575,15 +572,26 @@ function ProductDetailContent({
                     <div>
                       <label className="text-sm font-medium text-gray-700">
                         Yolcu Sayısı <span className="text-red-500">*</span>
-                        <input
-                          type="number"
-                          min="1"
-                          max={product.personCapacity || product.travelCapacity || 100}
+                        <select
                           {...bookingForm.register("yolcuSayisi", {
                             valueAsNumber: true,
                           })}
                           className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                        />
+                        >
+                          {Array.from(
+                            {
+                              length:
+                                product.personCapacity ||
+                                product.travelCapacity ||
+                                10,
+                            },
+                            (_, i) => i + 1
+                          ).map((num) => (
+                            <option key={num} value={num}>
+                              {num} {num === 1 ? "kişi" : "kişi"}
+                            </option>
+                          ))}
+                        </select>
                         {bookingForm.formState.errors.yolcuSayisi && (
                           <p className="mt-1 text-xs text-red-600">
                             {bookingForm.formState.errors.yolcuSayisi.message}
@@ -602,7 +610,10 @@ function ProductDetailContent({
                         />
                         {bookingForm.formState.errors.musteriAdSoyad && (
                           <p className="mt-1 text-xs text-red-600">
-                            {bookingForm.formState.errors.musteriAdSoyad.message}
+                            {
+                              bookingForm.formState.errors.musteriAdSoyad
+                                .message
+                            }
                           </p>
                         )}
                       </label>
@@ -618,27 +629,15 @@ function ProductDetailContent({
                         />
                         {bookingForm.formState.errors.musteriTelefon && (
                           <p className="mt-1 text-xs text-red-600">
-                            {bookingForm.formState.errors.musteriTelefon.message}
+                            {
+                              bookingForm.formState.errors.musteriTelefon
+                                .message
+                            }
                           </p>
                         )}
                       </label>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        E-posta <span className="text-red-500">*</span>
-                        <input
-                          type="email"
-                          {...bookingForm.register("musteriEposta")}
-                          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                          placeholder="ornek@email.com"
-                        />
-                        {bookingForm.formState.errors.musteriEposta && (
-                          <p className="mt-1 text-xs text-red-600">
-                            {bookingForm.formState.errors.musteriEposta.message}
-                          </p>
-                        )}
-                      </label>
-                    </div>
+
                     <div>
                       <label className="text-sm font-medium text-gray-700">
                         Özel İstekler (Opsiyonel)
@@ -758,25 +757,29 @@ function ProductDetailContent({
                       <div>
                         <label className="text-sm font-medium text-gray-700">
                           Yolcu Sayısı <span className="text-red-500">*</span>
-                          <input
-                            type="number"
-                            min="1"
-                            max={
-                              product.personCapacity ||
-                              product.travelCapacity ||
-                              100
-                            }
+                          <select
                             {...bookingForm.register("yolcuSayisi", {
                               valueAsNumber: true,
                             })}
                             className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                          />
+                          >
+                            {Array.from(
+                              {
+                                length:
+                                  product.personCapacity ||
+                                  product.travelCapacity ||
+                                  10,
+                              },
+                              (_, i) => i + 1
+                            ).map((num) => (
+                              <option key={num} value={num}>
+                                {num} {num === 1 ? "kişi" : "kişi"}
+                              </option>
+                            ))}
+                          </select>
                           {bookingForm.formState.errors.yolcuSayisi && (
                             <p className="mt-1 text-xs text-red-600">
-                              {
-                                bookingForm.formState.errors.yolcuSayisi
-                                  .message
-                              }
+                              {bookingForm.formState.errors.yolcuSayisi.message}
                             </p>
                           )}
                         </label>
@@ -819,25 +822,7 @@ function ProductDetailContent({
                           )}
                         </label>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-700">
-                          E-posta <span className="text-red-500">*</span>
-                          <input
-                            type="email"
-                            {...bookingForm.register("musteriEposta")}
-                            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-                            placeholder="ornek@email.com"
-                          />
-                          {bookingForm.formState.errors.musteriEposta && (
-                            <p className="mt-1 text-xs text-red-600">
-                              {
-                                bookingForm.formState.errors.musteriEposta
-                                  .message
-                              }
-                            </p>
-                          )}
-                        </label>
-                      </div>
+
                       <div>
                         <label className="text-sm font-medium text-gray-700">
                           Özel İstekler (Opsiyonel)

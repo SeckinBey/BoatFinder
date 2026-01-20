@@ -169,20 +169,7 @@ export async function checkAvailability(
  */
 export async function createBooking(bookingData) {
   try {
-    // Önce müsaitlik kontrolü yap
-    const availability = await checkAvailability(
-      bookingData.tekneId,
-      bookingData.girisTarihi,
-      bookingData.cikisTarihi
-    );
-
-    if (!availability.available) {
-      throw new Error(
-        `Bu tekne seçilen tarihler arasında müsait değil. Çakışan rezervasyonlar: ${availability.conflictingBookings
-          .map((b) => b.musteriAdSoyad)
-          .join(", ")}`
-      );
-    }
+    
 
     // Supabase column isimlerine çevir (camelCase -> snake_case)
     const supabaseData = {
