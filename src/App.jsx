@@ -31,6 +31,7 @@ const queryClient = new QueryClient({
 const Home = lazy(() => import("./app/Home.jsx"));
 const Explore = lazy(() => import("./app/Explore.jsx"));
 const ProductDetail = lazy(() => import("./app/ProductDetail.jsx"));
+const Contact = lazy(() => import("./app/Contact.jsx"));
 const SignIn = lazy(() => import("./app/admin/auth/SignIn.jsx"));
 
 // ✅ Lazy load admin routes (bunlar daha büyük ve nadiren kullanılıyor)
@@ -74,6 +75,7 @@ export default function App() {
                   path={ROUTES.PRODUCT_DETAIL}
                   element={<ProductDetail />}
                 />
+                <Route path={ROUTES.CONTACT} element={<Contact />} />
 
                 {/* Admin Sign In Route - Public Route */}
                 <Route path={ROUTES.SIGN_IN} element={<SignIn />} />

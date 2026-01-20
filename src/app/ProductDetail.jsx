@@ -391,44 +391,70 @@ function ProductDetailContent({
                   {displayedDescription}
                 </p>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-xl bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-900">
-                      🌊 Tur Süreci
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Sabah limandan çıkış, gün boyu koylarda mola, akşamüzeri
-                      dönüş.
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-900">
-                      🥗 Yemek ve Kumanya Düzeni
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Kahvaltı ve öğle menüsü dahildir. Akşam yemeği tercihe
-                      bağlıdır.
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-900">
-                      💰 Fiyat ve Dahil Olanlar
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Fiyatlarımıza kaptan, yemek ve servis personeli, yakıt
-                      dahil; kumanya hariç oluyor.
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-900">
-                      🕒 Giriş–Çıkış Saatleri
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Giriş çıkış saatleri için "Şartlar" bölümünden
-                      bakabilirsiniz. Öncesinde veya sonrasında başka
-                      kiralamamız yoksa giriş çıkış saatinde esneme
-                      yapabiliyoruz.
-                    </p>
-                  </div>
+                  {product.tourInfo?.tur_sureci && (
+                    <div className="rounded-xl bg-gray-50 p-4">
+                      <h3 className="font-semibold text-gray-900">
+                        🌊 Tur Süreci
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-600">
+                        {product.tourInfo.tur_sureci}
+                      </p>
+                    </div>
+                  )}
+                  {product.tourInfo?.fiyata_dahil_olanlar && (
+                    <div className="rounded-xl bg-gray-50 p-4">
+                      <h3 className="font-semibold text-gray-900">
+                        💰 Fiyat ve Dahil Olanlar
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-600">
+                        {product.tourInfo.fiyata_dahil_olanlar}
+                      </p>
+                    </div>
+                  )}
+                  {product.tourInfo?.giris_cikis_saatleri && (
+                    <div className="rounded-xl bg-gray-50 p-4">
+                      <h3 className="font-semibold text-gray-900">
+                        🕒 Giriş–Çıkış Saatleri
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-600">
+                        {product.tourInfo.giris_cikis_saatleri}
+                      </p>
+                    </div>
+                  )}
+                  {/* Fallback: Eğer tur bilgisi yoksa varsayılan bilgileri göster */}
+                  {!product.tourInfo && (
+                    <>
+                      <div className="rounded-xl bg-gray-50 p-4">
+                        <h3 className="font-semibold text-gray-900">
+                          🌊 Tur Süreci
+                        </h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                          Sabah limandan çıkış, gün boyu koylarda mola,
+                          akşamüzeri dönüş.
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-gray-50 p-4">
+                        <h3 className="font-semibold text-gray-900">
+                          💰 Fiyat ve Dahil Olanlar
+                        </h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                          Fiyatlarımıza kaptan, yemek ve servis personeli, yakıt
+                          dahil; kumanya hariç oluyor.
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-gray-50 p-4">
+                        <h3 className="font-semibold text-gray-900">
+                          🕒 Giriş–Çıkış Saatleri
+                        </h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                          Giriş çıkış saatleri için "Şartlar" bölümünden
+                          bakabilirsiniz. Öncesinde veya sonrasında başka
+                          kiralamamız yoksa giriş çıkış saatinde esneme
+                          yapabiliyoruz.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </section>
 

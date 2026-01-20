@@ -63,4 +63,14 @@ export const productSchema = z.object({
     .nullable()
     .optional()
     .or(z.literal("")),
+
+  // Tur bilgileri (opsiyonel)
+  tourInfo: z
+    .object({
+      turSureci: z.string().nullable().optional(),
+      fiyataDahilOlanlar: z.string().nullable().optional(),
+      girisCikisSaatleri: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
 });

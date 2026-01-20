@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const navigation = [
   { name: "Ana Sayfa", to: "/" },
   { name: "Keşfet", to: "/explore" },
-  { name: "Bize Ulaşın", to: "#" },
+  { name: "Bize Ulaşın", to: "/contact" },
   { name: "Giriş Yap", to: "/admin" },
 ];
 

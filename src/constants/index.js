@@ -3,6 +3,7 @@ export const ROUTES = {
   HOME: "/",
   EXPLORE: "/explore",
   PRODUCT_DETAIL: "/product/:id", // Dinamik route
+  CONTACT: "/contact",
   SIGN_IN: "/signin",
   ADMIN: "/admin",
   ADMIN_PRODUCTS: "/admin/products",

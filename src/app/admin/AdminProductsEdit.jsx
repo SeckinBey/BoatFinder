@@ -5,7 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { productSchema } from "../../schemas/productSchemas.js";
-import { getProduct, updateProduct } from "../../services/productService.js";
+import {
+  getProduct,
+  updateProduct,
+  upsertBoatTourInfo,
+} from "../../services/productService.js";
 import {
   getLocations,
   getBoatTypes,
@@ -104,6 +108,19 @@ export default function AdminProductsEdit() {
           price: productData.price || 0,
           discount: productData.discount || 0,
           url: productData.url || "",
+          tourInfo: productData.tourInfo
+            ? {
+                turSureci: productData.tourInfo.tur_sureci || "",
+                fiyataDahilOlanlar:
+                  productData.tourInfo.fiyata_dahil_olanlar || "",
+                girisCikisSaatleri:
+                  productData.tourInfo.giris_cikis_saatleri || "",
+              }
+            : {
+                turSureci: "",
+                fiyataDahilOlanlar: "",
+                girisCikisSaatleri: "",
+              },
         });
       } catch (err) {
         console.error("Error loading data:", err);
@@ -259,6 +276,12 @@ export default function AdminProductsEdit() {
       };
 
       await updateProduct(id, productData);
+
+      // Tur bilgilerini kaydet/güncelle
+      if (data.tourInfo) {
+        await upsertBoatTourInfo(id, data.tourInfo);
+      }
+
       success("Ürün başarıyla güncellendi");
       navigate(ROUTES.ADMIN_PRODUCTS);
     } catch (err) {
@@ -638,6 +661,50 @@ export default function AdminProductsEdit() {
                     </span>
                   </label>
                 ))}
+              </div>
+            </div>
+
+            {/* Tur Bilgileri */}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Tur Bilgileri
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tur Süreci
+                  </label>
+                  <textarea
+                    {...register("tourInfo.turSureci")}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Örn: Sabah limandan çıkış, gün boyu koylarda mola, akşamüzeri dönüş."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Fiyata Dahil Olanlar
+                  </label>
+                  <textarea
+                    {...register("tourInfo.fiyataDahilOlanlar")}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Örn: Fiyatlarımıza kaptan, yemek ve servis personeli, yakıt dahil; kumanya hariç oluyor."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Giriş-Çıkış Saatleri
+                  </label>
+                  <textarea
+                    {...register("tourInfo.girisCikisSaatleri")}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Örn: Giriş çıkış saatleri için 'Şartlar' bölümünden bakabilirsiniz. Öncesinde veya sonrasında başka kiralamamız yoksa giriş çıkış saatinde esneme yapabiliyoruz."
+                  />
+                </div>
               </div>
             </div>
 

@@ -75,6 +75,9 @@ export async function getProduct(id) {
 
     if (!data) return null;
 
+    // Tour info'yu getir
+    const tourInfo = await getBoatTourInfo(id);
+
     // Data transformasyonu
     return {
       ...data,
@@ -91,6 +94,7 @@ export async function getProduct(id) {
       type: data.boat_types,
       captain: data.captains,
       owner: data.boat_owners,
+      tourInfo: tourInfo || null,
     };
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -227,6 +231,86 @@ export async function deleteProduct(id) {
     return { success: true };
   } catch (error) {
     console.error("Error deleting product:", error);
+    throw error;
+  }
+}
+
+/**
+ * Tekne tur bilgilerini getirir
+ * @param {number|string} boatId - Tekne ID
+ * @returns {Promise<Object|null>} Tur bilgisi objesi veya null
+ */
+export async function getBoatTourInfo(boatId) {
+  try {
+    const { data, error } = await supabase
+      .from("boat_tour_info")
+      .select("*")
+      .eq("boat_id", boatId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        // No rows returned - bu normal, henüz tur bilgisi eklenmemiş olabilir
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching boat tour info:", error);
+    throw error;
+  }
+}
+
+/**
+ * Tekne tur bilgilerini oluşturur veya günceller (upsert)
+ * @param {number|string} boatId - Tekne ID
+ * @param {Object} tourInfoData - Tur bilgisi verisi
+ * @returns {Promise<Object>} Oluşturulan/güncellenmiş tur bilgisi
+ */
+export async function upsertBoatTourInfo(boatId, tourInfoData) {
+  try {
+    const supabaseData = {
+      boat_id: boatId,
+      tur_sureci: tourInfoData.turSureci || null,
+      fiyata_dahil_olanlar: tourInfoData.fiyataDahilOlanlar || null,
+      giris_cikis_saatleri: tourInfoData.girisCikisSaatleri || null,
+    };
+
+    const { data, error } = await supabase
+      .from("boat_tour_info")
+      .upsert(supabaseData, {
+        onConflict: "boat_id",
+        ignoreDuplicates: false,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error upserting boat tour info:", error);
+    throw error;
+  }
+}
+
+/**
+ * Tekne tur bilgilerini siler
+ * @param {number|string} boatId - Tekne ID
+ * @returns {Promise<{success: boolean}>}
+ */
+export async function deleteBoatTourInfo(boatId) {
+  try {
+    const { error } = await supabase
+      .from("boat_tour_info")
+      .delete()
+      .eq("boat_id", boatId);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting boat tour info:", error);
     throw error;
   }
 }
